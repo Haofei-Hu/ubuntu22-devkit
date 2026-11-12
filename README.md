@@ -9,7 +9,7 @@
 
 ## Orin NX 16GB 完整安装：直接复制终端命令
 
-适用于 **JetPack 6.2 / Ubuntu 22.04 / ARM64**。以下命令下载 `codex/orin-nx-16gb` 分支（Jetson 版本），使用 HTTPS，无需配置 GitHub SSH 密钥。
+适用于 **JetPack 6.2 / Ubuntu 22.04 / ARM64**。Jetson 更新已合并到 `main`，以下命令直接下载主分支，使用 HTTPS，无需配置 GitHub SSH 密钥。
 
 **每条命令执行完再输入下一条；如果报错，先停下并保留报错。使用普通用户运行，不要在 `bash` 前加 `sudo`。**
 
@@ -19,7 +19,7 @@
 
 ```bash
 cd ~
-git clone -b codex/orin-nx-16gb https://github.com/Haofei-Hu/ubuntu22-devkit.git ubuntu22-devkit-jetson
+git clone -b main https://github.com/Haofei-Hu/ubuntu22-devkit.git ubuntu22-devkit-jetson
 cd ~/ubuntu22-devkit-jetson
 ```
 
@@ -57,7 +57,7 @@ bash verify-jetson.sh
 ```bash
 cd ~/ubuntu22-devkit-jetson
 git fetch origin
-git switch codex/orin-nx-16gb
+git switch main
 git pull --ff-only
 bash install-jetson.sh --repair-apt
 bash install-jetson.sh --with-clash
