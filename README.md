@@ -1,6 +1,15 @@
 # Ubuntu 22.04 开发环境
 
-适用于 **Ubuntu 22.04 Desktop、Intel/AMD x86_64**。使用 Bash 执行，需要联网及 sudo 权限。
+支持两个安装流程，均使用 Bash，需要联网及 sudo 权限：
+
+- **Jetson Orin NX 16GB / JetPack 6.2 / Ubuntu 22.04 ARM64**：查看 [Jetson 安装说明](JETSON.md)，运行 `bash install-jetson.sh`。
+- **Ubuntu 22.04 Desktop / Intel、AMD x86_64**：运行 `bash install.sh`，安装内容见下文。
+
+`install.sh` / `verify.sh` 在 ARM64 上自动转入 Jetson 流程。Jetson 使用 ARM64 软件包和无需 Snap 的浏览器，保留现有 JetPack 计算栈。
+
+Jetson 遇到 APT 依赖中断时，先运行 `bash install-jetson.sh --repair-apt`；只需浏览器可运行 `bash install-jetson.sh --browser-only`。
+
+**以下原有配置表及使用说明仅针对 x86_64 版本。Jetson 的软件差异、安装命令和验证方式均见 [JETSON.md](JETSON.md)。**
 
 ## 配置内容
 
@@ -109,7 +118,7 @@ sudo systemctl start ModemManager
 
 ## 部署范围
 
-- 可在多台 Ubuntu 22.04 amd64 电脑重复执行；不适用于 macOS、ARM 或其他 Ubuntu 版本。
+- 可在多台 Ubuntu 22.04 amd64 电脑重复执行；不适用于 macOS 或其他 Ubuntu 版本；ARM64 Jetson 使用上方独立流程。
 - 这是联网安装脚本，不包含软件本体和离线依赖。
 - QGC、Clash Verge 固定版本；ChatGPT 下载官方最新包，APT、pip 和扩展使用安装时可用版本，因此不保证各次安装的所有版本完全相同。
 - 已完成 Bash 语法、新增软件的 APT 模拟安装及 ChatGPT 失败分支检查，尚未完成整个开发环境的全流程安装和图形界面实测。

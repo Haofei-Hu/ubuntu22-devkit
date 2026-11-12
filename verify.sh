@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
+# ARM64 Jetson uses its own package set; preserve the existing amd64 workflow.
+if [[ $(uname -s) == Linux ]] && command -v dpkg >/dev/null && [[ $(dpkg --print-architecture) == arm64 ]]; then
+  script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+  exec bash "$script_dir/verify-jetson.sh" "$@"
+fi
 [[ -f /opt/ros/humble/setup.bash ]] || { echo 'ROS Humble 未安装'; exit 1; }
 # ROS environment hooks may reference unset variables.
 set +u
