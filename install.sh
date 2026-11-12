@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Ubuntu 22.04 amd64 desktop; run as your regular user, not sudo bash.
 set -Eeuo pipefail
+# ARM64 Jetson uses its own package set; preserve the existing amd64 workflow.
+if [[ $(uname -s) == Linux ]] && command -v dpkg >/dev/null && [[ $(dpkg --print-architecture) == arm64 ]]; then
+  script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+  exec bash "$script_dir/install-jetson.sh" "$@"
+fi
 trap 'echo "安装未全部完成：第 $LINENO 行。请根据上方错误检查网络、软件源或系统兼容性后重新运行。" >&2' ERR
 die() { echo "$*" >&2; exit 1; }
 [[ $(uname -s) == Linux && -r /etc/os-release ]] || die '仅支持 Ubuntu Linux。'

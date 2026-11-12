@@ -1,6 +1,74 @@
 # Ubuntu 22.04 开发环境
 
-适用于 **Ubuntu 22.04 Desktop、Intel/AMD x86_64**。使用 Bash 执行，需要联网及 sudo 权限。
+支持两个安装流程，均使用 Bash，需要联网及 sudo 权限：
+
+- **Jetson Orin NX 16GB / JetPack 6.2 / Ubuntu 22.04 ARM64**：查看 [Jetson 安装说明](JETSON.md)，运行 `bash install-jetson.sh`。
+- **Ubuntu 22.04 Desktop / Intel、AMD x86_64**：运行 `bash install.sh`，安装内容见下文。
+
+`install.sh` / `verify.sh` 在 ARM64 上自动转入 Jetson 流程。Jetson 使用 ARM64 软件包和无需 Snap 的浏览器，保留现有 JetPack 计算栈。
+
+## Orin NX 16GB 完整安装：直接复制终端命令
+
+适用于 **JetPack 6.2 / Ubuntu 22.04 / ARM64**。以下命令下载 `codex/orin-nx-16gb` 分支（Jetson 版本），使用 HTTPS，无需配置 GitHub SSH 密钥。
+
+**每条命令执行完再输入下一条；如果报错，先停下并保留报错。使用普通用户运行，不要在 `bash` 前加 `sudo`。**
+
+### 1. 下载 Jetson 版本
+
+在终端执行（需要已安装 Git）：
+
+```bash
+cd ~
+git clone -b codex/orin-nx-16gb https://github.com/Haofei-Hu/ubuntu22-devkit.git ubuntu22-devkit-jetson
+cd ~/ubuntu22-devkit-jetson
+```
+
+如果提示 `git: command not found`，先执行 `sudo apt update`、`sudo apt install git`，再重试。若此时提示 dpkg 中断或依赖损坏，先执行 `sudo dpkg --configure -a` 和 `sudo apt --fix-broken install --no-remove`；前一条若因缺依赖失败，继续运行后一条修复，修复仍失败则保留报错。
+
+### 2. 修复之前未完成的软件安装
+
+```bash
+bash install-jetson.sh --repair-apt
+```
+
+等出现“APT 修复完成”后再进行下一步。输入 sudo 密码时屏幕不会显示字符，正常输入后按回车。APT 如果询问是否继续，先查看列出的操作再确认。
+
+### 3. 完整安装开发环境（含 Clash Verge）
+
+```bash
+bash install-jetson.sh --with-clash
+```
+
+包含：ARM64 VS Code、ROS 2 Humble、MAVROS、C/C++ 和 Python 开发环境、Epiphany 浏览器、Terminator、Clash Verge Rev，以及串口权限和 ROS 工作区配置。保留现有 JetPack / CUDA。原 x86_64 版本的 QGC AppImage、Chrome 和 ChatGPT amd64 桌面包不在 Jetson 安装范围内，详见 [Jetson 软件差异](JETSON.md#安装内容与差异)。
+
+安装完成后注销并重新登录，使串口权限生效。Clash 需要自行导入订阅；飞控连接参数需要按实际硬件设置。
+
+### 4. 验证完整安装
+
+```bash
+cd ~/ubuntu22-devkit-jetson
+bash verify-jetson.sh
+```
+
+### 已下载过这个 Jetson 版本：更新后重新安装
+
+无需重复下载。在原目录执行：
+
+```bash
+cd ~/ubuntu22-devkit-jetson
+git fetch origin
+git switch codex/orin-nx-16gb
+git pull --ff-only
+bash install-jetson.sh --repair-apt
+bash install-jetson.sh --with-clash
+bash verify-jetson.sh
+```
+
+如果之前的目录叫 `ubuntu22-devkit`，把第一条命令改为 `cd ~/ubuntu22-devkit`。若 Git 提示本地修改冲突，先保留修改，不要强制覆盖。安装器可重复运行；浏览器图形界面、GPU 和飞控通信仍需要在板子上实测。
+
+---
+
+**以下原有配置表及使用说明仅针对 x86_64 版本。Jetson 的软件差异、安装命令和验证方式均见 [JETSON.md](JETSON.md)。**
 
 ## 配置内容
 
@@ -109,7 +177,7 @@ sudo systemctl start ModemManager
 
 ## 部署范围
 
-- 可在多台 Ubuntu 22.04 amd64 电脑重复执行；不适用于 macOS、ARM 或其他 Ubuntu 版本。
+- 可在多台 Ubuntu 22.04 amd64 电脑重复执行；不适用于 macOS 或其他 Ubuntu 版本；ARM64 Jetson 使用上方独立流程。
 - 这是联网安装脚本，不包含软件本体和离线依赖。
 - QGC、Clash Verge 固定版本；ChatGPT 下载官方最新包，APT、pip 和扩展使用安装时可用版本，因此不保证各次安装的所有版本完全相同。
 - 已完成 Bash 语法、新增软件的 APT 模拟安装及 ChatGPT 失败分支检查，尚未完成整个开发环境的全流程安装和图形界面实测。
